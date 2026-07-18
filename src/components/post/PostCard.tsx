@@ -1,14 +1,28 @@
 import dayjs from "dayjs";
 import type { Post } from "../../types/post";
 import { Trash2 } from "lucide-react";
+import type { CreateCommentRequest } from "../../types/comment";
+import { useState } from "react";
 
 interface Props {
   post: Post;
   onDelete: (id: number) => void;
+  onComment: (comment: CreateCommentRequest) => void;
 }
 
-export default function PostCard({ post, onDelete }: Props) {
+export default function PostCard({ post, onDelete, onComment }: Props) {
+  const [comment, setComment] = useState("");
   const user_id = JSON.parse(localStorage.getItem("user_id") || "null");
+
+  const handleComment = () => {
+    if (comment.trim()) {
+      onComment({
+        content: comment,
+        post_id: post.id
+      });
+      setComment("");
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
@@ -64,6 +78,21 @@ export default function PostCard({ post, onDelete }: Props) {
             ))
           )}
         </div>
+        <div className="mt-4 flex items-center gap-3 border-t pt-4">
+  <input
+    value={comment}
+    onChange={(e) => setComment(e.target.value)}
+    placeholder="Yorum ekle..."
+    className="flex-1 outline-none"
+  />
+
+  <button
+    onClick={handleComment}
+    className="text-blue-600 font-semibold hover:text-blue-700"
+  >
+    Paylaş
+  </button>
+</div>
       </div>
     </div>
   );

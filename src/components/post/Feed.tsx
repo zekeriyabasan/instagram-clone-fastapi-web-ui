@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { postService } from "../../services/post.service";
 import PostCard from "./PostCard";
 import CreatePostForm from "./CreatePostForm";
+import { commentService } from "../../services/comment.service";
 
 export default function Feed() {
   const queryClient = useQueryClient();
@@ -34,6 +35,15 @@ export default function Feed() {
     },
   });
 
+  const createCommentMutation = useMutation({
+  mutationFn: commentService.createComment,
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["posts"],
+    });
+  },
+});
+
   if (isLoading) {
     return <div className="text-center py-10">Gönderiler yükleniyor...</div>;
   }
@@ -58,8 +68,10 @@ export default function Feed() {
       {posts.map((post) => (
         <PostCard
           onDelete={(id) => deleteMutation.mutate(id)}
+          onComment={(comment) => createCommentMutation.mutate(comment)}
           key={post.id}
           post={post}
+          
         />
       ))}
     </div>
