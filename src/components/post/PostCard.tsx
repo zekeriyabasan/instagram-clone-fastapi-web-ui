@@ -1,15 +1,23 @@
 import dayjs from "dayjs";
 import type { Post } from "../../types/post";
+import { Trash2 } from "lucide-react";
 
 interface Props {
   post: Post;
+  onDelete: (id: number) => void;
 }
 
-export default function PostCard({ post }: Props) {
+export default function PostCard({ post, onDelete }: Props) {
+  const user_id = JSON.parse(localStorage.getItem("user_id") || "null");
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
       <div className="flex items-center gap-3 p-4">
-        <div className="w-10 h-10 rounded-full bg-gray-300" />
+        <img
+          src={`https://randomuser.me/api/portraits/men/${post.user_id % 100}.jpg`}
+          alt={post.user.username}
+          className="w-10 h-10 rounded-full object-cover"
+        />
 
         <div>
           <h2 className="font-semibold">{post.user.username}</h2>
@@ -18,11 +26,19 @@ export default function PostCard({ post }: Props) {
             {dayjs(post.timestamp).format("DD.MM.YYYY HH:mm")}
           </p>
         </div>
+        {post.user_id === user_id && (
+          <button
+            onClick={() => onDelete(post.id)}
+            className="ml-auto p-2 rounded-full text-gray-500 hover:bg-red-100 hover:text-red-600 transition"
+          >
+            <Trash2 size={18} />
+          </button>
+        )}
       </div>
 
       {post.image_url && (
         <img
-          src={import.meta.env.VITE_API_URL + '/' + post.image_url}
+          src={import.meta.env.VITE_API_URL + "/" + post.image_url}
           alt={post.title}
           className="w-full max-h-[600px] object-cover"
         />
