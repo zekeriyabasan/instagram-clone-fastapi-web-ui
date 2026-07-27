@@ -3,9 +3,15 @@ import { postService } from "../../services/post.service";
 import PostCard from "./PostCard";
 import CreatePostForm from "./CreatePostForm";
 import { commentService } from "../../services/comment.service";
+import { useAuthStore } from "../../store/authStore";
 
 export default function Feed() {
   const queryClient = useQueryClient();
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const {
     data: posts,
@@ -63,17 +69,26 @@ export default function Feed() {
   }
 
   return (
-    <div className="space-y-6">
-      <CreatePostForm onCreate={(post) => createMutation.mutate(post)} />
-      {posts.map((post) => (
-        <PostCard
-          onDelete={(id) => deleteMutation.mutate(id)}
-          onComment={(comment) => createCommentMutation.mutate(comment)}
-          key={post.id}
-          post={post}
-          
-        />
-      ))}
+  <div className="space-y-6">
+    <div className="flex justify-end">
+      <button
+        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+          onClick={handleLogout}
+      >
+        Logout
+      </button>
     </div>
-  );
+
+    <CreatePostForm onCreate={(post) => createMutation.mutate(post)} />
+
+    {posts.map((post) => (
+      <PostCard
+        key={post.id}
+        post={post}
+        onDelete={(id) => deleteMutation.mutate(id)}
+        onComment={(comment) => createCommentMutation.mutate(comment)}
+      />
+    ))}
+  </div>
+);
 }
